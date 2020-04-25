@@ -1,105 +1,25 @@
+import 'package:demo_app/models/num_converter_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Converter extends StatefulWidget {
-  @override
-  _ConverterState createState() => _ConverterState();
-}
-
-class _ConverterState extends State<Converter> {
-  String _binary = "";
-  String _currentMethod = "Binary -> Decimal";
-  String _decimal =
-      "0"; // _decimal = int.parse(_binary, radix: 2).toRadixString(10);
-
-  void _onPressed(int k) {
-    setState(() {
-      if (_currentMethod == 'Binary -> Decimal') {
-        switch (k) {
-          case 0:
-            _binary = _binary + "0";
-            _decimal = int.parse(_binary, radix: 2).toRadixString(10);
-            break;
-          case 1:
-            _binary = _binary + "1";
-            _decimal = int.parse(_binary, radix: 2).toRadixString(10);
-            break;
-        }
-      } else {
-        switch (k) {
-          case 0:
-            _decimal = _decimal + "0";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 1:
-            _decimal = _decimal + "1";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 2:
-            _decimal = _decimal + "2";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 3:
-            _decimal = _decimal + "3";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 4:
-            _decimal = _decimal + "4";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 5:
-            _decimal = _decimal + "5";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 6:
-            _decimal = _decimal + "6";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 7:
-            _decimal = _decimal + "7";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 8:
-            _decimal = _decimal + "8";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-          case 9:
-            _decimal = _decimal + "9";
-            _binary = int.parse(_decimal, radix: 10).toRadixString(2);
-            break;
-        }
-      }
-    });
-  }
-
-  void _reset() {
-    setState(() {
-      _binary = "";
-      _decimal = "0";
-    });
-  }
-
+class Converter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final numConverterObj = Provider.of<NumConverter>(context);
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              setState(() {
-                if (_currentMethod == 'Binary -> Decimal') {
-                  _currentMethod = 'Decimal -> Binary';
-                } else {
-                  _currentMethod = 'Binary -> Decimal';
-                }
-              });
+              numConverterObj.changeCurrentMethod();
             },
             child: Container(
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                '$_currentMethod',
-                style: TextStyle(color: Theme.of(context).accentColor),
+                '${numConverterObj.currentMethod}',
+                //style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),
           ),
@@ -107,11 +27,12 @@ class _ConverterState extends State<Converter> {
             padding: const EdgeInsets.all(8.0),
             alignment: Alignment.centerRight,
             child: Text(
-              '$_binary',
+              '${numConverterObj.binary}',
               textAlign: TextAlign.right,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).accentColor,
+                  color: Colors.red,
+                  //color: Theme.of(context).accentColor,
                   fontSize: 35),
             ),
           ),
@@ -119,29 +40,31 @@ class _ConverterState extends State<Converter> {
             alignment: Alignment.centerRight,
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              '$_decimal',
+              '${numConverterObj.decimal}',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Theme.of(context).accentColor,
+                  color: Colors.red,
+                  //color: Theme.of(context).accentColor,
                   fontSize: 35),
             ),
           ),
-          _buildPadNumber(_currentMethod),
-          _buildResetBtn(),
+          _buildPadNumber(numConverterObj),
+          _buildResetBtn(numConverterObj),
         ],
       ),
     );
   }
 
-  Widget _numberButton(int number) {
+  Widget _numberButton(NumConverter numConverterObj, int number) {
     return Expanded(
       flex: 4,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: MaterialButton(
-            color: Theme.of(context).primaryColor,
+            color: Colors.red,
+            //color: Theme.of(context).primaryColor,
             onPressed: () {
-              _onPressed(number);
+              numConverterObj.convertNumber(number);
             },
             child: Text(number.toString(),
                 style: new TextStyle(
@@ -152,8 +75,8 @@ class _ConverterState extends State<Converter> {
     );
   }
 
-  Widget _buildPadNumber(String currentMethod) {
-    if (currentMethod == 'Binary -> Decimal') {
+  Widget _buildPadNumber(NumConverter numConverterObj) {
+    if (numConverterObj.currentMethod == 'Binary -> Decimal') {
       return Expanded(
         flex: 3,
         child: SizedBox(
@@ -161,9 +84,9 @@ class _ConverterState extends State<Converter> {
           child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                _numberButton(1),
+                _numberButton(numConverterObj, 1),
                 Spacer(),
-                _numberButton(0),
+                _numberButton(numConverterObj, 0),
               ]),
         ),
       );
@@ -178,9 +101,9 @@ class _ConverterState extends State<Converter> {
                 flex: 1,
                 child: Row(
                   children: <Widget>[
-                    _numberButton(9),
-                    _numberButton(8),
-                    _numberButton(7),
+                    _numberButton(numConverterObj, 9),
+                    _numberButton(numConverterObj, 8),
+                    _numberButton(numConverterObj, 7),
                   ],
                 ),
               ),
@@ -188,9 +111,9 @@ class _ConverterState extends State<Converter> {
                 flex: 1,
                 child: Row(
                   children: <Widget>[
-                    _numberButton(6),
-                    _numberButton(5),
-                    _numberButton(4),
+                    _numberButton(numConverterObj, 6),
+                    _numberButton(numConverterObj, 5),
+                    _numberButton(numConverterObj, 4),
                   ],
                 ),
               ),
@@ -198,9 +121,9 @@ class _ConverterState extends State<Converter> {
                 flex: 1,
                 child: Row(
                   children: <Widget>[
-                    _numberButton(3),
-                    _numberButton(2),
-                    _numberButton(1),
+                    _numberButton(numConverterObj, 3),
+                    _numberButton(numConverterObj, 2),
+                    _numberButton(numConverterObj, 1),
                   ],
                 ),
               ),
@@ -211,16 +134,17 @@ class _ConverterState extends State<Converter> {
     }
   }
 
-  Widget _buildResetBtn() {
-    if (_currentMethod == 'Binary -> Decimal') {
+  Widget _buildResetBtn(NumConverter numConverterObj) {
+    if (numConverterObj.currentMethod == 'Binary -> Decimal') {
       return Expanded(
         flex: 1,
         child: Container(
           padding: const EdgeInsets.all(8.0),
           child: MaterialButton(
-            color: Theme.of(context).accentColor,
+            color: Colors.red,
+            //color: Theme.of(context).accentColor,
             onPressed: () {
-              _reset();
+              numConverterObj.resetConverter();
             },
             child: Text(
               "Reset",
@@ -240,9 +164,10 @@ class _ConverterState extends State<Converter> {
             child: Container(
               padding: const EdgeInsets.all(8.0),
               child: MaterialButton(
-                color: Theme.of(context).accentColor,
+                color: Colors.red,
+                //color: Theme.of(context).accentColor,
                 onPressed: () {
-                  _reset();
+                  numConverterObj.resetConverter();
                 },
                 child: Text(
                   "Reset",
@@ -259,9 +184,10 @@ class _ConverterState extends State<Converter> {
             child: Container(
               padding: const EdgeInsets.all(8.0),
               child: MaterialButton(
-                color: Theme.of(context).accentColor,
+                color: Colors.red,
+                //color: Theme.of(context).accentColor,
                 onPressed: () {
-                  _onPressed(0);
+                  numConverterObj.convertNumber(0);
                 },
                 child: Text(
                   "0",
