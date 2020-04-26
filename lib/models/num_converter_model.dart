@@ -5,26 +5,31 @@ class NumConverter with ChangeNotifier {
   String decimal;
   String currentMethod;
 
-
   NumConverter({this.binary, this.decimal, this.currentMethod});
 
   //Note: Require parameters are outise {}
   void changeCurrentMethod() {
+    String _x = binary;
+    String _y = decimal;
     if (currentMethod == 'Binary -> Decimal') {
       currentMethod = 'Decimal -> Binary';
+      convertNumber(int.parse(_x));
     } else {
       currentMethod = 'Binary -> Decimal';
+      convertNumber(int.parse(_y));
     }
     notifyListeners();
   }
-  void convertNumber(int number){
-    if(currentMethod == 'Binary -> Decimal'){
+
+  void convertNumber(int number) {
+    if (currentMethod == 'Binary -> Decimal') {
       binaryToDecimal(number);
-    }else{
+    } else {
       decimalToBinary(number);
     }
     notifyListeners();
   }
+
   void binaryToDecimal(int k) {
     switch (k) {
       case 0:
